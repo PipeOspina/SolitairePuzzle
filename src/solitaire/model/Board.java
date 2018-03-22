@@ -21,8 +21,13 @@ public class Board {
     private int size;
     private int type;
     
-    public static final int DEFAULT = 0;
-    public static final int CUSTOM = 1;
+    public static final int DEFAULT =   0;
+    public static final int CUSTOM =    1;
+    
+    public static final int UP =        0;
+    public static final int DOWN =      1;
+    public static final int RIGHT =     2;
+    public static final int LEFT =      3;
 
     public Board() {
         this(7, 2);
@@ -215,31 +220,95 @@ public class Board {
     }
     
     public boolean validMove(Piece piece, Button button) {
-        int pieceX = piece.getPosition()[0];
-        int pieceY = piece.getPosition()[1];
-        int buttonX = button.getPiece().getPosition()[0];
-        int buttonY = button.getPiece().getPosition()[1];
-        if(piece.isInGame()) {
-            if(!piece.isButtonIn()) {
-                if(pieceX == buttonX)
-                    return (Math.abs(pieceY - buttonY) == 2);
-                else if(pieceY == buttonY)
-                    return (Math.abs(pieceX - buttonX) == 2);
-                else
-                    return false;
+        if(button != null) {
+            int pieceX = piece.getPosition()[0];
+            int pieceY = piece.getPosition()[1];
+            int buttonX = button.getPiece().getPosition()[0];
+            int buttonY = button.getPiece().getPosition()[1];
+            if(piece.isInGame()) {
+                if(!piece.isButtonIn()) {
+                    if(pieceX == buttonX)
+                        return (Math.abs(pieceY - buttonY) == 2);
+                    else if(pieceY == buttonY)
+                        return (Math.abs(pieceX - buttonX) == 2);
+                    else
+                        return false;
+                }
             }
         }
         return false;
     }
     
-//    public boolean solveGame(int i, int j) {
-//        if(i < this.size && j < this.size) {
-//            if(validMove(pieces[i][j], pieces[i][j].getButton())) {
-//                
-//            }
-//        }
+    public boolean solveGame() {
+        return solveGame(0, 0, 0);
+    }
+    
+    public boolean solveGame(int i, int j, int k) {
+        if(i < size && j < size) {
+            if(k < 4) {
+                switch(k) {
+                    case UP:
+                        System.out.println("Probando con UP...");
+                        if(j >= 2) {
+                            if(validMove(pieces[i][j - 2], pieces[i][j].getButton())) {
+                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + i + ", " + (j - 2) + ") a");
+                            } else
+                                return solveGame(i, j, k + 1);
+                        } else {
+                            System.out.println("No se pudo mover la ficha con UP...");
+                            return solveGame(i, j, k + 1);
+                        }
+                        break;
+                    case DOWN:
+                        if(j < size - 2) {
+                            if(validMove(pieces[i][j + 2], pieces[i][j].getButton())) {
+                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + i + ", " + (j + 2) + ") a");
+                            } else
+                                return solveGame(i, j, k + 1);
+                        } else
+                            return solveGame(i, j, k + 1);
+                        break;
+                    case RIGHT:
+                        if(i >= 2) {
+                            if(validMove(pieces[i - 2][j], pieces[i][j].getButton())) {
+                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + (i - 2) + ", " + (j) + ") a");
+                            } else
+                                return solveGame(i, j, k + 1);
+                        } else
+                            return solveGame(i, j, k + 1);
+                        break;
+                    case LEFT:
+                        if(i < size - 2) {
+                            if(validMove(pieces[i + 2][j], pieces[i][j].getButton())) {
+                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + (i + 2) + ", " + (j) + ") a");
+                            } else
+                                return solveGame(i, j, k + 1);
+                        } else
+                            return solveGame(i, j, k + 1);
+                        break;
+                    default:
+                        System.out.println("No se pudo mover la ficha (" + i + ", " + j + ")");
+                        break;
+                }
+            }
+        }
+        
+        
+        
+        return true;
+        
+//        if(i >= size)
+//            return solveGame(0, j + 1, 0);
+//        else if(i < size)
+//            return solveGame(i + 1, j, 0);
+//        if(j >= size)
+//            return solveGame(i + 1, 0, 0);
+//        else if(j < size)
+//            return solveGame(i, j + 1, 0);
+//        if(i >= size && j >= size)
+//            return true;
 //        return true;
-//    }
+    }
     
     @Override
     public String toString() {

@@ -26,10 +26,11 @@ public class FXMain extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        Board b = new Board(11, 2);
+        Board b = new Board();
         b.buildPositions();
         b.consoleDraw();
         System.out.println(b.isSolution());
+        b.solveGame();
     }
 
     /**
