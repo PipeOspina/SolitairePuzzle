@@ -10,6 +10,7 @@ package solitaire.model;
  * @author felipe.ospinah
  */
 public class Board {
+    private Piece[][] pieces;
     private int[][] emptyPos;
     private int[][] positions;
     private int[][] blankPos;
@@ -35,6 +36,7 @@ public class Board {
     public Board(int[] initPos, int[][] blankPos, int size) {
         this.size = size;
         this.positions = new int[size][size];
+        this.pieces = new Piece[size][size];
         this.initPos = initPos;
         this.blankPos = blankPos;
         this.size = size;
@@ -45,6 +47,7 @@ public class Board {
         this.size = size;
         this.blankSize = blankSize;
         this.positions = new int[size][size];
+        this.pieces = new Piece[size][size];
         this.initPos[0] = size / 2;
         this.initPos[1] = size / 2;
         this.type = DEFAULT;
@@ -158,13 +161,16 @@ public class Board {
                         max = Math.abs(this.initPos[1] - j);
                     this.positions[i][j] = this.max;
                     System.out.print(" " + this.positions[i][j]);
+                    this.pieces[i][j] = new Piece(i, j, true, true);
                 } else {
                     this.positions[i][j] = -1;
                     System.out.print(this.positions[i][j]);
+                    this.pieces[i][j] = new Piece(i, j, false, false);
                 }
             }
             System.out.println("");
         }
+        this.pieces[this.initPos[0]][this.initPos[1]] = new Piece(this.initPos[0], this.initPos[1], false, true);
     }
     
     public void consoleDraw() {
@@ -184,6 +190,19 @@ public class Board {
             }
             System.out.println("");
         }
+    }
+    
+    public boolean isSolution() {
+        for (int i = 0; i < this.positions.length; i++) {
+            for (int j = 0; j < this.positions[i].length; j++) {
+                if(this.positions[i][j] == 0 && isOnBoard(i, j)) {
+                    if(i == this.initPos[0] && j == this.initPos[1]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     @Override

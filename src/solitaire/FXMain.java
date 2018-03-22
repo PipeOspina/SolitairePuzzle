@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import solitaire.model.Board;
 
 /**
  *
@@ -24,6 +25,11 @@ public class FXMain extends Application {
         primaryStage.setTitle("Sample Login - [http://www.jc-mouse.net/]");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        Board b = new Board(11, 2);
+        b.buildPositions();
+        b.consoleDraw();
+        System.out.println(b.isSolution());
     }
 
     /**
