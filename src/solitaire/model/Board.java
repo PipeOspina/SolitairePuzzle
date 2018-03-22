@@ -129,13 +129,22 @@ public class Board {
     public void setType(int type) {
         this.type = type;
     }
+
+    public Piece[][] getPieces() {
+        return pieces;
+    }
+
+    public void setPieces(Piece[][] pieces) {
+        this.pieces = pieces;
+    }
     
     public boolean isOnBoard(int x, int y) {
         switch(this.type) {
             case CUSTOM:
-                for (int i = 0; i < this.blankPos.length; i++) {
-                    if(this.blankPos[i][0] == x && this.blankPos[i][1] == y) 
+                for (int[] blankPo : this.blankPos) {
+                    if (blankPo[0] == x && blankPo[1] == y) {
                         return false;
+                    }
                 }
                 return true;
             default:
@@ -205,8 +214,35 @@ public class Board {
         return false;
     }
     
+    public boolean validMove(Piece piece, Button button) {
+        int pieceX = piece.getPosition()[0];
+        int pieceY = piece.getPosition()[1];
+        int buttonX = button.getPiece().getPosition()[0];
+        int buttonY = button.getPiece().getPosition()[1];
+        if(piece.isInGame()) {
+            if(!piece.isButtonIn()) {
+                if(pieceX == buttonX)
+                    return (Math.abs(pieceY - buttonY) == 2);
+                else if(pieceY == buttonY)
+                    return (Math.abs(pieceX - buttonX) == 2);
+                else
+                    return false;
+            }
+        }
+        return false;
+    }
+    
+//    public boolean solveGame(int i, int j) {
+//        if(i < this.size && j < this.size) {
+//            if(validMove(pieces[i][j], pieces[i][j].getButton())) {
+//                
+//            }
+//        }
+//        return true;
+//    }
+    
     @Override
     public String toString() {
-        return "";
+        return "Holi :)";
     }
 }

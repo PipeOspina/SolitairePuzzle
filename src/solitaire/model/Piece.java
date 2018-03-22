@@ -22,7 +22,7 @@ public class Piece {
         this.inGame = inGame;
         
         if(buttonIn) {
-            button = new Button(Button.REPOSE);
+            button = new Button(Button.REPOSE, this);
         }
     }
 
