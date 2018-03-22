@@ -110,6 +110,22 @@ public class Board {
     public void setBlankSize(int blankSize) {
         this.blankSize = blankSize;
     }
+
+    public int[][] getBlankPos() {
+        return blankPos;
+    }
+
+    public void setBlankPos(int[][] blankPos) {
+        this.blankPos = blankPos;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
     
     public boolean isOnBoard(int x, int y) {
         switch(this.type) {
@@ -173,21 +189,5 @@ public class Board {
     @Override
     public String toString() {
         return "";
-    }
-
-    public int[][] getBlankPos() {
-        return blankPos;
-    }
-
-    public void setBlankPos(int[][] blankPos) {
-        this.blankPos = blankPos;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 }
