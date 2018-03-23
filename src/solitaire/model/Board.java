@@ -221,10 +221,10 @@ public class Board {
     
     public boolean validMove(Piece piece, Button button) {
         if(button != null) {
-            int pieceX = piece.getPosition()[0];
-            int pieceY = piece.getPosition()[1];
-            int buttonX = button.getPiece().getPosition()[0];
-            int buttonY = button.getPiece().getPosition()[1];
+            int pieceX = piece.getPosition()[1];
+            int pieceY = piece.getPosition()[0];
+            int buttonX = button.getPiece().getPosition()[1];
+            int buttonY = button.getPiece().getPosition()[0];
             if(piece.isInGame()) {
                 if(!piece.isButtonIn()) {
                     if(pieceX == buttonX)
@@ -244,70 +244,82 @@ public class Board {
     }
     
     public boolean solveGame(int i, int j, int k) {
-        if(i < size && j < size) {
+        if(i < this.size && j < this.size) {
             if(k < 4) {
-                switch(k) {
-                    case UP:
-                        System.out.println("Probando con UP...");
-                        if(j >= 2) {
-                            if(validMove(pieces[i][j - 2], pieces[i][j].getButton())) {
-                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + i + ", " + (j - 2) + ") a");
-                            } else
-                                return solveGame(i, j, k + 1);
-                        } else {
-                            System.out.println("No se pudo mover la ficha con UP...");
-                            return solveGame(i, j, k + 1);
-                        }
-                        break;
-                    case DOWN:
-                        if(j < size - 2) {
-                            if(validMove(pieces[i][j + 2], pieces[i][j].getButton())) {
-                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + i + ", " + (j + 2) + ") a");
-                            } else
-                                return solveGame(i, j, k + 1);
-                        } else
-                            return solveGame(i, j, k + 1);
-                        break;
-                    case RIGHT:
-                        if(i >= 2) {
-                            if(validMove(pieces[i - 2][j], pieces[i][j].getButton())) {
-                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + (i - 2) + ", " + (j) + ") a");
-                            } else
-                                return solveGame(i, j, k + 1);
-                        } else
-                            return solveGame(i, j, k + 1);
-                        break;
-                    case LEFT:
-                        if(i < size - 2) {
-                            if(validMove(pieces[i + 2][j], pieces[i][j].getButton())) {
-                                System.out.println("Se mueve la ficha de (" + i + ", " + j + ") a (" + (i + 2) + ", " + (j) + ") a");
-                            } else
-                                return solveGame(i, j, k + 1);
-                        } else
-                            return solveGame(i, j, k + 1);
-                        break;
-                    default:
-                        System.out.println("No se pudo mover la ficha (" + i + ", " + j + ")");
-                        break;
-                }
-            }
+                return moveButton(pieces[i][j].getButton(), k, i, j);
+            } else
+                return solveGame(i + 1, j, 0);
         }
         
-        
-        
-        return true;
-        
-//        if(i >= size)
-//            return solveGame(0, j + 1, 0);
-//        else if(i < size)
-//            return solveGame(i + 1, j, 0);
-//        if(j >= size)
-//            return solveGame(i + 1, 0, 0);
-//        else if(j < size)
-//            return solveGame(i, j + 1, 0);
-//        if(i >= size && j >= size)
-//            return true;
-//        return true;
+        if(i >= this.size && j >= this.size) {
+            int count = 0;
+            int[] pos = new int[2];
+            for (int l = 0; l < pieces.length; l++) {
+                for (int m = 0; m < pieces[l].length; m++) {
+                    if(pieces[l][m].isButtonIn()) {
+                        count++;
+                        pos[0] = l;
+                        pos[1] = m;
+                    }
+                }
+            }
+            if(count == 1) {
+                if(this.initPos == pos) {
+                    System.out.println("Se ha encontrado una solución :)");
+                    return true;
+                } else {
+                    System.out.println("Por este camino no se encontró solución");
+                    return false;
+                }
+            }
+        } else if(i >= this.size) {
+            return solveGame(0, j + 1, 0);
+        } else if(i < this.size) {
+            return solveGame(i + 1, j, 0);
+        }
+        return false;
+    }
+    
+    public boolean moveButton(Piece piece, Button button, int i, int j, int k) {
+        Piece auxPiece = this.pieces[piece.getPosition()[0]][piece.getPosition()[1]];
+        if(validMove(piece, button)) {
+            button.setPiece(auxPiece);
+            auxPiece.setButton(button);
+            this.pieces[piece.getPosition()[0]][piece.getPosition()[1]] = auxPiece;
+        }
+        return solveGame(i, j, k + 1);
+    }
+    
+    public boolean moveButton(Button button, int direction, int i, int j) {
+        if(button != null) {
+        int buttonX = button.getPiece().getPosition()[1];
+        int buttonY = button.getPiece().getPosition()[0];
+            switch(direction) {
+                case UP:
+                    if(buttonY >= 2) {
+                        return moveButton(pieces[buttonY + 2][buttonX], button, i, j, direction);
+                    } else
+                        return false;
+                case DOWN:
+                    if(buttonY < this.size - 2) {
+                        return moveButton(pieces[buttonY - 2][buttonX], button, i, j, direction);
+                    } else
+                        return false;
+                case RIGHT:
+                    if(buttonX < this.size - 2) {
+                        return moveButton(pieces[buttonY][buttonX + 2], button, i, j, direction);
+                    } else
+                        return false;
+                case LEFT:
+                    if(buttonX >= 2) {
+                        return moveButton(pieces[buttonY][buttonX - 2], button, i, j, direction);
+                    } else
+                        return false;
+                default:
+                    return false;
+            }
+        } else
+            return solveGame(i, j, direction + 1);
     }
     
     @Override
