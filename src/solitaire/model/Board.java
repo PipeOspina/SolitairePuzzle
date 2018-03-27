@@ -12,22 +12,20 @@ package solitaire.model;
 public class Board {
     private Piece[][] pieces;
     private int[][] emptyPos;
-    private int[][] positions;
-    private int[][] blankPos;
-    private int[] highPos;
-    private int[] initPos = new int[2];
+    private int[][] outPos;
+    private int[] winPos = new int[2];
     private int blankSize;
-    private int max;
     private int size;
     private int type;
     
-    public static final int DEFAULT =   0;
-    public static final int CUSTOM =    1;
+    public static final int DEFAULT =           0;
+    public static final int SIMETRIC_CUSTOM =   1;
+    public static final int CUSTOM =            2;
     
-    public static final int UP =        0;
-    public static final int DOWN =      1;
-    public static final int RIGHT =     2;
-    public static final int LEFT =      3;
+    public static final int UP =                0;
+    public static final int DOWN =              1;
+    public static final int RIGHT =             2;
+    public static final int LEFT =              3;
 
     public Board() {
         this(7, 2);
@@ -35,32 +33,30 @@ public class Board {
     
     public Board(int[] initPos) {
         this();
-        this.initPos = initPos;
+        this.winPos = initPos;
     }
     
     public Board(int[] initPos, int[][] blankPos, int size) {
         this.size = size;
-        this.positions = new int[size][size];
         this.pieces = new Piece[size][size];
-        this.initPos = initPos;
-        this.blankPos = blankPos;
+        this.winPos = initPos;
+        this.outPos = blankPos;
         this.size = size;
-        this.type = CUSTOM;
+        this.type = SIMETRIC_CUSTOM;
     }
     
     public Board(int size, int blankSize) {
         this.size = size;
         this.blankSize = blankSize;
-        this.positions = new int[size][size];
         this.pieces = new Piece[size][size];
-        this.initPos[0] = size / 2;
-        this.initPos[1] = size / 2;
+        this.winPos[0] = size / 2;
+        this.winPos[1] = size / 2;
         this.type = DEFAULT;
     }
     
     public Board(int size, int blankSize, int[] initPos) {
         this(size, blankSize);
-        this.initPos = initPos;
+        this.winPos = initPos;
     }
 
     public int[][] getEmptyPos() {
@@ -71,36 +67,12 @@ public class Board {
         this.emptyPos = emptyPos;
     }
 
-    public int[][] getPositions() {
-        return positions;
-    }
-
-    public void setPositions(int[][] positions) {
-        this.positions = positions;
-    }
-
-    public int[] getHighPos() {
-        return highPos;
-    }
-
-    public void setHighPos(int[] highPos) {
-        this.highPos = highPos;
-    }
-
     public int[] getInitPos() {
-        return initPos;
+        return winPos;
     }
 
     public void setInitPos(int[] initPos) {
-        this.initPos = initPos;
-    }
-
-    public int getMax() {
-        return max;
-    }
-
-    public void setMax(int max) {
-        this.max = max;
+        this.winPos = initPos;
     }
 
     public int getSize() {
@@ -120,11 +92,11 @@ public class Board {
     }
 
     public int[][] getBlankPos() {
-        return blankPos;
+        return outPos;
     }
 
     public void setBlankPos(int[][] blankPos) {
-        this.blankPos = blankPos;
+        this.outPos = blankPos;
     }
 
     public int getType() {
@@ -143,184 +115,22 @@ public class Board {
         this.pieces = pieces;
     }
     
-    public boolean isOnBoard(int x, int y) {
-        switch(this.type) {
-            case CUSTOM:
-                for (int[] blankPo : this.blankPos) {
-                    if (blankPo[0] == x && blankPo[1] == y) {
-                        return false;
-                    }
-                }
-                return true;
-            default:
-                if(x < this.blankSize && y < this.blankSize)
-                    return false;
-                else if(this.size - x <= this.blankSize && y < this.blankSize)
-                    return false;
-                else if(this.size - y <= this.blankSize && x < this.blankSize)
-                    return false;
-                else if(this.size - x <= this.blankSize && this.size - y <= this.blankSize)
-                    return false;
-                else
-                    return true;
-        }
-    }
-    
-    public void buildPositions() {
-        for (int i = 0; i < this.positions.length; i++) {
-            for (int j = 0; j < this.positions[i].length; j++) {
-                if(isOnBoard(i, j)) {
-                    this.max = Math.abs(this.initPos[0] - i);
-                    if(Math.abs(this.initPos[1] - j) > this.max)
-                        max = Math.abs(this.initPos[1] - j);
-                    this.positions[i][j] = this.max;
-                    System.out.print(" " + this.positions[i][j]);
-                    this.pieces[i][j] = new Piece(i, j, true, true);
-                } else {
-                    this.positions[i][j] = -1;
-                    System.out.print(this.positions[i][j]);
-                    this.pieces[i][j] = new Piece(i, j, false, false);
-                }
-            }
-            System.out.println("");
-        }
-        this.pieces[this.initPos[0]][this.initPos[1]] = new Piece(this.initPos[0], this.initPos[1], false, true);
-    }
-    
     public void consoleDraw() {
-        for (int i = 0; i < this.positions.length; i++) {
-            for (int j = 0; j < this.positions[i].length; j++) {
-                    switch(this.positions[i][j]) {
-                        case -1:
-                            System.out.print("  ");
-                            break;
-                        case 0:
-                            System.out.print("  ");
-                            break;
-                        default:
-                            System.out.print("* ");
-                            break;
-                    }
+        for (Piece[] piece : pieces) {
+            for (Piece piece1 : piece) {
+                if (piece1.isButtonIn() && piece1.isInGame()) {
+                    System.out.print("* ");
+                } else {
+                    System.out.print("  ");
+                }
             }
             System.out.println("");
         }
+        System.out.println("\n");
     }
     
-    public boolean isSolution() {
-        for (int i = 0; i < this.positions.length; i++) {
-            for (int j = 0; j < this.positions[i].length; j++) {
-                if(this.positions[i][j] == 0 && isOnBoard(i, j)) {
-                    if(i == this.initPos[0] && j == this.initPos[1]) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    public boolean validMove(Piece piece, Button button) {
-        if(button != null) {
-            int pieceX = piece.getPosition()[1];
-            int pieceY = piece.getPosition()[0];
-            int buttonX = button.getPiece().getPosition()[1];
-            int buttonY = button.getPiece().getPosition()[0];
-            if(piece.isInGame()) {
-                if(!piece.isButtonIn()) {
-                    if(pieceX == buttonX)
-                        return (Math.abs(pieceY - buttonY) == 2);
-                    else if(pieceY == buttonY)
-                        return (Math.abs(pieceX - buttonX) == 2);
-                    else
-                        return false;
-                }
-            }
-        }
-        return false;
-    }
-    
-    public boolean solveGame() {
-        return solveGame(0, 0, 0);
-    }
-    
-    public boolean solveGame(int i, int j, int k) {
-        if(i < this.size && j < this.size) {
-            if(k < 4) {
-                return moveButton(pieces[i][j].getButton(), k, i, j);
-            } else
-                return solveGame(i + 1, j, 0);
-        }
-        
-        if(i >= this.size && j >= this.size) {
-            int count = 0;
-            int[] pos = new int[2];
-            for (int l = 0; l < pieces.length; l++) {
-                for (int m = 0; m < pieces[l].length; m++) {
-                    if(pieces[l][m].isButtonIn()) {
-                        count++;
-                        pos[0] = l;
-                        pos[1] = m;
-                    }
-                }
-            }
-            if(count == 1) {
-                if(this.initPos == pos) {
-                    System.out.println("Se ha encontrado una solución :)");
-                    return true;
-                } else {
-                    System.out.println("Por este camino no se encontró solución");
-                    return false;
-                }
-            }
-        } else if(i >= this.size) {
-            return solveGame(0, j + 1, 0);
-        } else if(i < this.size) {
-            return solveGame(i + 1, j, 0);
-        }
-        return false;
-    }
-    
-    public boolean moveButton(Piece piece, Button button, int i, int j, int k) {
-        Piece auxPiece = this.pieces[piece.getPosition()[0]][piece.getPosition()[1]];
-        if(validMove(piece, button)) {
-            button.setPiece(auxPiece);
-            auxPiece.setButton(button);
-            this.pieces[piece.getPosition()[0]][piece.getPosition()[1]] = auxPiece;
-        }
-        return solveGame(i, j, k + 1);
-    }
-    
-    public boolean moveButton(Button button, int direction, int i, int j) {
-        if(button != null) {
-        int buttonX = button.getPiece().getPosition()[1];
-        int buttonY = button.getPiece().getPosition()[0];
-            switch(direction) {
-                case UP:
-                    if(buttonY >= 2) {
-                        return moveButton(pieces[buttonY + 2][buttonX], button, i, j, direction);
-                    } else
-                        return false;
-                case DOWN:
-                    if(buttonY < this.size - 2) {
-                        return moveButton(pieces[buttonY - 2][buttonX], button, i, j, direction);
-                    } else
-                        return false;
-                case RIGHT:
-                    if(buttonX < this.size - 2) {
-                        return moveButton(pieces[buttonY][buttonX + 2], button, i, j, direction);
-                    } else
-                        return false;
-                case LEFT:
-                    if(buttonX >= 2) {
-                        return moveButton(pieces[buttonY][buttonX - 2], button, i, j, direction);
-                    } else
-                        return false;
-                default:
-                    return false;
-            }
-        } else
-            return solveGame(i, j, direction + 1);
-    }
+    //********************** ToDo *******************************
+    // - Make the "constructor" method for the default board
     
     @Override
     public String toString() {

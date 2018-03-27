@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import solitaire.model.Board;
+import solitaire.model.Game;
 
 /**
  *
@@ -27,10 +28,10 @@ public class FXMain extends Application {
         primaryStage.show();
         
         Board b = new Board();
-        b.buildPositions();
         b.consoleDraw();
-        System.out.println(b.isSolution());
-        b.solveGame();
+        
+        //Game game = new Game();
+        //game.solveGame(b, 0, 0, 0);
     }
 
     /**

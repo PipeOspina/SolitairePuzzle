@@ -16,13 +16,15 @@ public class Piece {
     private Button button;
 
     public Piece(int x, int y, boolean buttonIn, boolean inGame) {
-        this.position[0] = x;
-        this.position[1] = y;
+        this.position[0] = y;
+        this.position[1] = x;
         this.buttonIn = buttonIn;
         this.inGame = inGame;
         
         if(buttonIn) {
-            button = new Button(Button.REPOSE, this);
+            this.button = new Button(Button.REPOSE, this);
+        } else {
+            this.button = null;
         }
     }
 
@@ -31,8 +33,8 @@ public class Piece {
     }
 
     public void setPosition(int x, int y) {
-        this.position[0] = x;
-        this.position[1] = y;
+        this.position[0] = y;
+        this.position[1] = x;
     }
 
     public boolean isInGame() {
@@ -48,7 +50,10 @@ public class Piece {
     }
 
     public void setButtonIn(boolean buttonIn) {
-        this.buttonIn = buttonIn;
+        if(buttonIn)
+            this.buttonIn = buttonIn;
+        else
+            this.button = null;
     }
 
     public Button getButton() {
@@ -56,6 +61,7 @@ public class Piece {
     }
 
     public void setButton(Button button) {
+        this.buttonIn = button != null;
         this.button = button;
     }
 }
